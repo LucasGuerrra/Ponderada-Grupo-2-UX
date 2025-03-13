@@ -1,0 +1,7 @@
+{
+"type": "FeatureCollection",
+"name": "Blocos",
+"features": [
+{ "type": "Feature", "properties": { "Name": "sem rede" }, "geometry": { "type": "Point", "coordinates": [ -46.6551988, -23.7056624, 0.0 ] } }
+]
+}

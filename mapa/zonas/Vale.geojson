@@ -1,0 +1,7 @@
+{
+"type": "FeatureCollection",
+"name": "Vale",
+"features": [
+{ "type": "Feature", "properties": { "Name": "Sem rede" }, "geometry": { "type": "MultiPoint", "coordinates": [ [ -45.4889854, -23.6538586, 0.0 ] ] } }
+]
+}
