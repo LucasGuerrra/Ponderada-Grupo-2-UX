@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <title>Mapa da Região Metropolitana de São Paulo com D3</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    /* Garante que a página ocupe toda a tela */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    
+    /* Estilo para as regiões do mapa */
+    .region {
+      fill: #eee;
+      stroke: #999;
+      stroke-width: 0.5px;
+    }
+    
+    /* Estilo para os pontos de demanda */
+    .demand {
+      stroke: #333;
+      stroke-width: 1px;
+    }
+  </style>
+</head>
+<body>
+  <svg></svg>
+  <script>
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const svg = d3.select("svg");
+
+    // Define uma projeção centrada em São Paulo
+    const projection = d3.geoMercator()
+      .center([-46.6333, -23.5505])  // Coordenadas aproximadas do centro de São Paulo
+      .scale(50000)                  // Ajuste a escala conforme necessário
+      .translate([width / 2, height / 2]);
+
+    const path = d3.geoPath().projection(projection);
+
+    // Carrega os dados: o arquivo GeoJSON com as regiões e o CSV com os pontos de demanda
+    Promise.all([
+      d3.json("SP.json"),       // Substitua pelo caminho do seu arquivo GeoJSON
+      d3.csv("new_file.csv")      // Substitua pelo caminho do seu arquivo CSV de demandas
+    ]).then(([geoData, demandData]) => {
+      // Desenha as regiões do mapa
+      svg.append("g")
+        .selectAll("path")
+        .data(geoData.features)
+        .enter()
+        .append("path")
+        .attr("class", "region")
+        .attr("d", path);
+
+      // Cria uma escala de cores para os clusters de demandas
+      // Aqui, a coluna que identifica o cluster é "Cluster"
+      const clusters = Array.from(new Set(demandData.map(d => d.Cluster)));
+      const colorScale = d3.scaleOrdinal()
+        .domain(clusters)
+        .range(d3.schemeCategory10);
+
+      // Desenha os pontos de demanda utilizando os campos LATITUDE e LONGITUDE
+      svg.append("g")
+        .selectAll("circle")
+        .data(demandData)
+        .enter()
+        .append("circle")
+        .attr("class", "demand")
+        .attr("r", 5)
+        .attr("transform", d => {
+          // Converte as coordenadas de string para número e projeta as coordenadas
+          const coords = projection([+d.LONGITUDE, +d.LATITUDE]);
+          return `translate(${coords[0]}, ${coords[1]})`;
+        })
+        .attr("fill", d => colorScale(d.Cluster));
+    })
+    .catch(error => {
+      console.error("Erro ao carregar os dados:", error);
+    });
+  </script>
+</body>
+</html>
