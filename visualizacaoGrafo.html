@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grafo Bipartido Ponderado Completo</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        svg {
+            background-color: #f9f9f9;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .links line {
+            stroke: #ccc;
+            stroke-opacity: 0.8;
+            stroke-width: 1.5px;
+        }
+        
+        .nodes circle {
+            stroke: #fff;
+            stroke-width: 2px;
+        }
+        
+        .link-label {
+            font-size: 14px;
+            font-weight: bold;
+            text-anchor: middle;
+            fill: #333;
+        }
+        
+        .link-label-bg {
+            fill: #f9f9f9;
+            rx: 5;
+            ry: 5;
+        }
+        
+        .node-label {
+            font-size: 14px;
+            font-weight: bold;
+            dominant-baseline: central;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Por que funciona?</h1>
+    <div id="graph"></div>
+
+    <script>
+        // Configuração do tamanho da visualização
+        const width = 800;
+        const height = 600;
+        
+        // Criação do SVG
+        const svg = d3.select("#graph")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+        
+        // Dados do grafo bipartido
+        const nodesA = ["Gasista 1", "Gasista 2", "Gasista 3", "Gasista 4"];
+        const nodesB = ["Chamado 1", "Chamado 2", "Chamado 3"];
+        
+        // Criar array de nós
+        const nodes = [
+            ...nodesA.map((id, i) => ({ id, group: 1, y: 100 + i * 120 })),
+            ...nodesB.map((id, i) => ({ id, group: 2, y: 150 + i * 120 }))
+        ];
+        
+        // Criar todas as conexões possíveis entre A e B
+        const links = [];
+        for (let a of nodesA) {
+            for (let b of nodesB) {
+                // Gerar um peso aleatório entre 1 e 9 para cada conexão
+                const weight = Math.random().toFixed(2);
+                links.push({ source: a, target: b, weight });
+            }
+        }
+        
+        // Define posições fixas para os nós
+        for (let node of nodes) {
+            node.fx = node.group === 1 ? 150 : width - 150;
+            node.fy = node.y;
+        }
+        
+        // Criação da simulação de forças
+        const simulation = d3.forceSimulation(nodes)
+            .force("link", d3.forceLink(links).id(d => d.id))
+            .force("charge", d3.forceManyBody().strength(-100))
+            .alphaDecay(0.01);
+        
+        // Criação das arestas (links)
+        const link = svg.append("g")
+            .attr("class", "links")
+            .selectAll("line")
+            .data(links)
+            .enter()
+            .append("line")
+            .attr("stroke", "#aaa");
+        
+        // Grupo para os rótulos de peso com fundo
+        const linkLabelGroups = svg.append("g")
+            .attr("class", "link-label-groups")
+            .selectAll("g")
+            .data(links)
+            .enter()
+            .append("g");
+        
+        // Fundo para os rótulos de peso
+        linkLabelGroups.append("rect")
+            .attr("class", "link-label-bg")
+            .attr("width", 25)
+            .attr("height", 20)
+            .attr("x", -12.5)
+            .attr("y", -10);
+        
+        // Criação dos textos nas arestas (pesos)
+        linkLabelGroups.append("text")
+            .attr("class", "link-label")
+            .text(d => d.weight);
+        
+        // Criação dos nós
+        const node = svg.append("g")
+            .attr("class", "nodes")
+            .selectAll("g")
+            .data(nodes)
+            .enter()
+            .append("g");
+        
+        // Círculos para os nós
+        node.append("circle")
+            .attr("r", 20)
+            .attr("fill", d => d.group === 1 ? "#4682b4" : "#ff0230");
+        
+        // Textos para os nós
+        node.append("text")
+            .attr("class", "node-label")
+            .attr("dx", d => d.group === 1 ? -30 : 30)
+            .attr("text-anchor", d => d.group === 1 ? "end" : "start")
+            .text(d => d.id);
+        
+        // Posicionamento dos rótulos para evitar sobreposição
+        simulation.on("tick", () => {
+            link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+            
+            // Ajusta o tamanho do fundo do rótulo com base no texto
+            linkLabelGroups.selectAll(".link-label-bg")
+                .attr("width", function() {
+                    const textWidth = this.parentNode.querySelector("text").getBBox().width;
+                    return textWidth + 10;
+                })
+                .attr("x", function() {
+                    const textWidth = this.parentNode.querySelector("text").getBBox().width;
+                    return -(textWidth + 10) / 2;
+                });
+            
+            // Posiciona os rótulos ao longo das linhas para evitar sobreposição
+            linkLabelGroups
+                .attr("transform", (d, i) => {
+                    // Calcular um fator que distribui os rótulos ao longo da linha
+                    const factor = 0.35 + (i % 3) * 0.15; // Varia entre 0.35, 0.5, 0.65
+                    
+                    const midX = d.source.x + (d.target.x - d.source.x) * factor;
+                    const midY = d.source.y + (d.target.y - d.source.y) * factor;
+                    
+                    return `translate(${midX},${midY})`;
+                });
+            
+            node
+                .attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+    </script>
+</body>
+</html>
