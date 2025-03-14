@@ -1,4 +1,4 @@
-# README - Justificativa das Visualizações de Dados
+# Justificativa das Visualizações de Dados
 
 ## Objetivo do Projeto
 Este projeto tem como objetivo otimizar a alocação de gasistas para atender demandas distribuídas na rede de distribuição da Comgás. Para isso, buscamos responder três questões principais:
@@ -16,16 +16,19 @@ Para compreender melhor os dados e facilitar a tomada de decisão, são proposta
 
 ### 1. Mapa de Demandas por Clusters
 - **Localização**: [`Ideia_Mapa_Demandas`](./Ideia_Mapa_Demandas/)
+- **Dupla responsável**: João gabriel de Ouro Preto e Wildisley José de Souza Filho.
 - **Descrição**: Esta visualização apresenta a região de atuação da empresa com as demandas agrupadas em clusters, utilizando cores distintas para representar cada cluster.
 - **Justificativa**: Auxilia na compreensão de como as demandas estão organizadas e agrupadas, facilitando a definição de estratégias de alocação.
 
 ### 2. Mapa de Profissionais
-- **Localização**: [`Ideia_Mpara_Ruas`](./Ideia_Mapa_Ruas/)
+- **Localização**: [`Ideia_Mapa_Ruas`](./Ideia_Mapa_Ruas/)
+- **Dupla responsável**: Giovanna Fátima de Britto Vieira
 - **Descrição**: Um mapa que exibe as ruas da região e o posicionamento dos profissionais.
 - **Justificativa**: Esta visualização é essencial para a interface web da solução, pois permite visualizar onde estão os profissionais e como eles devem se locomover para atender às demandas de forma eficiente.
 
 ### 3. Grafo Bipartido Profissional-Demanda
 - **Localização**: [`Ideia_Validacao_Atribuicao`](./Ideia_Validacao_Atribuicao/)
+- **Dupla responsável**: Jonathan Teodoro Alves e Lucas Guerra Vicente
 - **Descrição**: Representa a relação entre os profissionais e as demandas que lhes foram atribuídas.
 - **Justificativa**: Este grafo permite entender como foi realizado o pareamento entre profissionais e demandas, fornecendo transparência e explicabilidade ao processo de alocação.
 
