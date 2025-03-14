@@ -3,26 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de São Paulo</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <title>Mapa com Google Maps e D3.js</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7cFZyHH-CztrZtPfyygSnUl2c-XXKtNg"></script>
     <style>
-        svg {
-            background-color: #f5f5f5;
-        }
-        path {
-            fill: lightblue;
-            stroke: black;
-            stroke-width: 0.5;
-        }
-        path:hover {
-            fill: orange;
-        }
+        body { margin: 0; }
+        #map { width: 100vw; height: 100vh; }
     </style>
 </head>
 <body>
-    <h1>Mapa de São Paulo</h1>
+<div id="map"></div>
 
-    <script src="mapa.js"></script>
-
+<script src="mapa.js"></script>
 </body>
 </html>

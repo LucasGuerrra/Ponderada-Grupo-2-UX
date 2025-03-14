@@ -1,44 +1,31 @@
-// Configuração do mapa
-const width = 800;
-const height = 600;
+function initMap() {
+    const map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: -15.7801, lng: -47.9292 }, // Centro do Brasil
+        zoom: 4,
+        styles: [
+            {
+                featureType: "all",
+                elementType: "geometry"
+            }
+        ]
+    });
 
-const svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+    // Adicionar Marcadores
+    const markers = [
+        { position: { lat: -23.55052, lng: -46.633308 }, title: "São Paulo" },
+        { position: { lat: -22.9068, lng: -43.1729 }, title: "Rio de Janeiro" }
+    ];
 
-const projection = d3.geoMercator()
-    .scale(4000)  
-    .center([-49, -23]) 
-    .translate([width / 2, height / 2]);
-
-const path = d3.geoPath().projection(projection);
-
-const numZonas = 120;  
-const arquivos = Array.from({ length: numZonas }, (_, i) => `data/zona_${i + 1}.json`);
-
-// Função para carregar todos os arquivos JSON
-function carregarMapas() {
-    const promises = arquivos.map(arquivo => d3.json(arquivo));
-
-    Promise.all(promises).then(dados => {
-        dados.forEach(geoData => {
-            svg.selectAll("path")
-                .data(geoData.features)
-                .enter()
-                .append("path")
-                .attr("d", path)
-                .attr("fill", "lightblue")
-                .attr("stroke", "black")
-                .attr("stroke-width", 1)
-                .on("mouseover", function () {
-                    d3.select(this).attr("fill", "orange");
-                })
-                .on("mouseout", function () {
-                    d3.select(this).attr("fill", "lightblue");
-                });
+    markers.forEach(markerInfo => {
+        new google.maps.Marker({
+            position: markerInfo.position,
+            map: map,
+            title: markerInfo.title
         });
-    }).catch(error => console.error("Erro ao carregar os arquivos:", error));
-}
+    });
 
-// Chama a função para carregar os mapas
-carregarMapas();
+    // Carregar GeoJSON (Estados do Brasil)
+    map.data.loadGeoJson("https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson");
+} 
+
+window.onload = initMap;
